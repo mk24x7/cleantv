@@ -29,7 +29,7 @@ class EdgeLayer(private val density: Float, private val firstVisitMs: Long, priv
     private val darkPaint = Paint().apply { color = 0xFF2B1A14.toInt(); style = Paint.Style.FILL }
     private val captionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF8C96A3.toInt(); textAlign = Paint.Align.RIGHT }
     private val rect = RectF()
-    private val caption = String(android.util.Base64.decode("TWFkZSB3aXRoIDwzIGJ5IG1rMjR4NyB1c2luZyBDbGF1ZGU=", android.util.Base64.DEFAULT))
+    private val caption = String(android.util.Base64.decode("TWFkZSB3aXRoIOKdpO+4jyBieSBtazI0eDcgdXNpbmcgQ2xhdWRl", android.util.Base64.DEFAULT), Charsets.UTF_8)
 
     fun onSize(width: Int, height: Int) {
         w = width.toFloat(); h = height.toFloat()
