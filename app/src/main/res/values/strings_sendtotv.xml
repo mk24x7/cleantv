@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stt_title">Send to TV</string>
+    <string name="stt_hint">Scan to play a video, open a link, or start a photo slideshow from your phone or laptop.</string>
+    <string name="stt_no_network">Connect the TV to Wi-Fi to use Send to TV.</string>
+    <string name="stt_play_failed">This file could not be played on the TV.</string>
+    <string name="stt_slideshow">Photos</string>
+    <string name="stt_no_photos">No photos received yet</string>
+    <string name="stt_photo_of">Photo %1$d of %2$d</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channels">Channels</string>
+    <string name="channels_sub">Free live channels</string>
+    <string name="channels_empty">No channels in the list</string>
+    <string name="channel_error">Could not play %1$s</string>
+    <string name="channel_error_hint">OK to retry, Back for the list</string>
+    <string name="channel_loading">Tuning %1$s</string>
+    <string name="channel_youtube_resolve_failed">YouTube stream for %1$s is not live right now</string>
+    <string name="channel_banner_format">%1$d  %2$s</string>
+</resources>

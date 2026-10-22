@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="saver_title">Screensaver</string>
+    <string name="saver_subtitle">Starts now and becomes the idle screensaver</string>
+    <string name="saver_mystify">Mystify</string>
+    <string name="saver_mystify_sub">bouncing ribbons</string>
+    <string name="saver_starfield">Starfield</string>
+    <string name="saver_starfield_sub">flying through space</string>
+    <string name="saver_pipes">Pipes</string>
+    <string name="saver_pipes_sub">growing pipework</string>
+    <string name="saver_off">Off</string>
+    <string name="saver_off_sub">screen stays as is</string>
+</resources>

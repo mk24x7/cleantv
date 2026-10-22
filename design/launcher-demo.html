@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lean TV launcher demo (1280x720)</title>
+<style>
+  :root {
+    --bg0: #0b0d12; --bg1: #141a26;
+    --text: #f2f4f8; --muted: #8b93a7;
+    --ring: #ffffff;
+  }
+  html, body { margin: 0; background: #000; color: var(--text);
+    font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Roboto, Arial, sans-serif; }
+  .screen {
+    width: 1280px; height: 720px; margin: 24px auto; position: relative; overflow: hidden;
+    background: radial-gradient(1200px 700px at 20% 0%, var(--bg1) 0%, var(--bg0) 60%, #06070a 100%);
+    border-radius: 6px; outline: 1px solid #222;
+  }
+  .top { position: absolute; top: 36px; left: 72px; right: 72px; display: flex; justify-content: space-between; align-items: baseline; }
+  .brand { font-size: 22px; font-weight: 600; letter-spacing: 0.2px; }
+  .brand span { color: var(--muted); font-weight: 400; margin-left: 10px; font-size: 16px; }
+  .clock { font-size: 22px; font-weight: 500; color: var(--text); }
+  .row { position: absolute; left: 72px; right: 0; }
+  .row h2 { margin: 0 0 14px 6px; font-size: 15px; font-weight: 600; color: var(--muted); letter-spacing: 1.2px; text-transform: uppercase; }
+  .tiles { display: flex; gap: 22px; padding: 8px 6px 18px 6px; }
+  .tile {
+    position: relative; flex: 0 0 auto; border-radius: 14px; overflow: hidden;
+    background: #1b2130; box-shadow: 0 10px 30px rgba(0,0,0,.45);
+    transition: transform 160ms ease, box-shadow 160ms ease; outline: none; cursor: pointer;
+  }
+  .tile.input { width: 236px; height: 132px; }
+  .tile.app   { width: 200px; height: 112px; }
+  .tile:focus, .tile.focused {
+    transform: scale(1.09); z-index: 2;
+    box-shadow: 0 0 0 4px var(--ring), 0 18px 48px rgba(0,0,0,.65), 0 0 40px rgba(255,255,255,.12);
+  }
+  .tile .label { position: absolute; left: 18px; bottom: 14px; font-size: 20px; font-weight: 600; }
+  .tile .sub { position: absolute; left: 18px; top: 16px; font-size: 13px; color: var(--muted); font-weight: 500; letter-spacing: .6px; }
+  .tile .dot { position: absolute; right: 16px; top: 16px; width: 10px; height: 10px; border-radius: 50%; background: #3a4255; }
+  .tile .dot.on { background: #34c759; box-shadow: 0 0 10px rgba(52,199,89,.8); }
+  .tile svg.glyph { position: absolute; right: 18px; bottom: 16px; width: 40px; height: 40px; opacity: .85; }
+  /* brand-ish tiles, text wordmarks only */
+  .prime   { background: linear-gradient(135deg, #0f2a3f, #00a8e1); }
+  .hotstar { background: linear-gradient(135deg, #0a1a3a, #1f80e0); }
+  .youtube { background: linear-gradient(135deg, #2a0b0b, #ff0000); }
+  .appletv { background: linear-gradient(135deg, #111, #2b2b2b); }
+  .browser { background: linear-gradient(135deg, #1b2b22, #2f9e6a); }
+  .usb     { background: linear-gradient(135deg, #2a2412, #c9a227); }
+  .settings{ background: linear-gradient(135deg, #1a1d26, #4a5168); }
+  .hdmi    { background: linear-gradient(160deg, #202a3d, #11151f); }
+  .av      { background: linear-gradient(160deg, #2a2330, #15121a); }
+  .tile.app .label { font-size: 19px; }
+  .tile.app .mark { position: absolute; left: 18px; top: 16px; font-size: 13px; letter-spacing: 1.4px; color: rgba(255,255,255,.75); text-transform: uppercase; font-weight: 600; }
+  .hint { position: absolute; left: 72px; bottom: 28px; color: var(--muted); font-size: 13px; }
+  .hint b { color: var(--text); font-weight: 600; }
+  .status { position: absolute; right: 72px; bottom: 28px; color: var(--muted); font-size: 13px; }
+  .status b { color: #34c759; }
+</style>
+</head>
+<body>
+<div class="screen" id="screen">
+  <div class="top">
+    <div class="brand">Lean TV <span>Mi TV 4A</span></div>
+    <div class="clock" id="clock">21:42</div>
+  </div>
+
+  <div class="row" style="top: 112px;">
+    <h2>Inputs</h2>
+    <div class="tiles" data-row="0">
+      <div class="tile input hdmi" tabindex="0" data-action="HDMI 1">
+        <div class="sub">INPUT</div><div class="dot on"></div>
+        <div class="label">HDMI 1</div>
+        <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M3 9h18v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M7 16v3h10v-3"/><path d="M7 12h10"/></svg>
+      </div>
+      <div class="tile input hdmi" tabindex="0" data-action="HDMI 2">
+        <div class="sub">INPUT</div><div class="dot"></div>
+        <div class="label">HDMI 2</div>
+        <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M3 9h18v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M7 16v3h10v-3"/><path d="M7 12h10"/></svg>
+      </div>
+      <div class="tile input hdmi" tabindex="0" data-action="HDMI 3">
+        <div class="sub">INPUT</div><div class="dot"></div>
+        <div class="label">HDMI 3</div>
+        <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M3 9h18v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M7 16v3h10v-3"/><path d="M7 12h10"/></svg>
+      </div>
+      <div class="tile input av" tabindex="0" data-action="AV">
+        <div class="sub">INPUT</div><div class="dot"></div>
+        <div class="label">AV</div>
+        <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M7 15v4M17 15v4"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="top: 318px;">
+    <h2>Apps</h2>
+    <div class="tiles" data-row="1">
+      <div class="tile app prime" tabindex="0" data-action="Prime Video"><div class="mark">amazon</div><div class="label">Prime Video</div></div>
+      <div class="tile app hotstar" tabindex="0" data-action="Hotstar"><div class="mark">disney+</div><div class="label">Hotstar</div></div>
+      <div class="tile app youtube" tabindex="0" data-action="YouTube"><div class="mark">google</div><div class="label">YouTube</div></div>
+      <div class="tile app appletv" tabindex="0" data-action="Apple TV"><div class="mark">apple</div><div class="label">Apple TV</div></div>
+      <div class="tile app browser" tabindex="0" data-action="Browser"><div class="mark">tv bro</div><div class="label">Browser</div></div>
+    </div>
+  </div>
+
+  <div class="row" style="top: 500px;">
+    <h2>Device</h2>
+    <div class="tiles" data-row="2">
+      <div class="tile app usb" tabindex="0" data-action="USB drive"><div class="mark">SanDisk 32 GB</div><div class="label">USB</div></div>
+      <div class="tile app settings" tabindex="0" data-action="Settings"><div class="mark">android tv</div><div class="label">Settings</div></div>
+    </div>
+  </div>
+
+  <div class="hint">Arrow keys move, <b>Enter</b> selects. On the TV: Home or Mi opens this screen, Back returns to what was playing.</div>
+  <div class="status"><b>HDMI 1</b> connected, 128 MB free</div>
+</div>
+
+<script>
+  // Demo-only focus model that mirrors D-pad behaviour: rows remember their last column.
+  const rows = [...document.querySelectorAll('.tiles')].map(r => [...r.querySelectorAll('.tile')]);
+  let r = 0, cols = rows.map(() => 0);
+  function focus() { rows[r][cols[r]].focus(); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { cols[r] = Math.min(cols[r] + 1, rows[r].length - 1); focus(); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft') { cols[r] = Math.max(cols[r] - 1, 0); focus(); e.preventDefault(); }
+    else if (e.key === 'ArrowDown') { r = Math.min(r + 1, rows.length - 1); focus(); e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { r = Math.max(r - 1, 0); focus(); e.preventDefault(); }
+    else if (e.key === 'Enter') { document.getElementById('clock').textContent = 'Launch: ' + document.activeElement.dataset.action; setTimeout(tick, 1500); }
+  });
+  rows.forEach((row, ri) => row.forEach((t, ci) => t.addEventListener('focus', () => { r = ri; cols[ri] = ci; })));
+  function tick() { const d = new Date(); document.getElementById('clock').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+  tick(); setInterval(tick, 15000); focus();
+</script>
+</body>
+</html>

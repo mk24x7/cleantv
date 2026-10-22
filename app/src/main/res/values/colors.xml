@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_left">#0A0C0F</color>
+    <color name="bg_right">#101418</color>
+    <color name="tile">#171C22</color>
+    <color name="tile_focus">#1B222B</color>
+    <color name="text">#EEF1F4</color>
+    <color name="text_dim">#AEB5C1</color>
+    <color name="muted">#8C96A3</color>
+    <color name="numeral_dim">#6B7482</color>
+    <color name="led_off">#2A3038</color>
+    <color name="green">#34C759</color>
+    <color name="black">#000000</color>
+</resources>

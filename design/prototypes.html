@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lean TV launcher: three design prototypes</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; color: #ddd; font-family: -apple-system, "Helvetica Neue", Roboto, Arial, sans-serif; }
+  .intro { max-width: 1280px; margin: 28px auto 8px; font-size: 14px; color: #bbb; line-height: 1.5; }
+  .intro b { color: #fff; }
+  .caption { max-width: 1280px; margin: 40px auto 10px; font-size: 15px; color: #fff; }
+  .caption small { display: block; color: #aaa; font-size: 13px; margin-top: 4px; }
+  .screen { width: 1280px; height: 720px; margin: 0 auto; position: relative; overflow: hidden; outline: 1px solid #000; }
+  .tile:focus, [tabindex]:focus { outline: none; }
+
+  /* ---------- A. Rows ---------- */
+  .A { background: #0e1116; color: #f3f5f7; }
+  .A .clock { position: absolute; right: 72px; top: 40px; font-size: 24px; font-weight: 500; }
+  .A .now { position: absolute; left: 72px; top: 40px; font-size: 24px; font-weight: 500; }
+  .A .now span { color: #9aa3b2; font-weight: 400; margin-left: 12px; font-size: 18px; }
+  .A .row { position: absolute; left: 72px; }
+  .A .row h2 { margin: 0 0 12px 6px; font-size: 18px; font-weight: 500; color: #9aa3b2; }
+  .A .tiles { display: flex; gap: 20px; padding: 10px 6px 20px; }
+  .A .tile { position: relative; flex: 0 0 auto; border-radius: 10px; background: #1a1f28; transition: transform 140ms ease, box-shadow 140ms ease; }
+  .A .tile.input { width: 224px; height: 126px; }
+  .A .tile.app { width: 192px; height: 108px; }
+  .A .tile:focus { transform: scale(1.08); box-shadow: 0 0 0 4px #fff, 0 16px 40px rgba(0,0,0,.6); z-index: 2; }
+  .A .tile .label { position: absolute; left: 18px; bottom: 14px; font-size: 22px; font-weight: 600; }
+  .A .tile .state { position: absolute; left: 18px; top: 16px; font-size: 14px; color: #9aa3b2; }
+  .A .tile .state.on { color: #34c759; }
+  .A .tile .state.on::before, .A .tile .state::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; margin-right: 8px; vertical-align: 1px; }
+  .A .prime { background: #00a8e1; } .A .hotstar { background: #1f3b8e; } .A .youtube { background: #e62117; }
+  .A .appletv { background: #2c2c2e; } .A .browser { background: #2f7d5a; } .A .usb { background: #8c6a1a; } .A .settings { background: #3b4252; }
+  .A .tile.app .label { font-size: 20px; }
+  .A .foot { position: absolute; left: 72px; bottom: 30px; color: #9aa3b2; font-size: 14px; }
+
+  /* ---------- B. Switchboard ---------- */
+  .B { background: #101418; color: #eef1f4; display: flex; }
+  .B .left { width: 520px; height: 100%; background: #0a0c0f; position: relative; }
+  .B .left h1 { position: absolute; left: 64px; top: 44px; margin: 0; font-size: 20px; font-weight: 500; color: #8c96a3; }
+  .B .inputs { position: absolute; left: 64px; top: 104px; right: 0; }
+  .B .in { position: relative; height: 128px; display: flex; align-items: center; padding-left: 28px; border-left: 6px solid transparent; transition: background 120ms, border-color 120ms; }
+  .B .in .n { font-family: "Roboto Condensed", "Arial Narrow", "Helvetica Neue", sans-serif; font-stretch: condensed; font-weight: 800; font-size: 104px; line-height: 1; width: 110px; letter-spacing: -4px; color: #eef1f4; }
+  .B .in .t { margin-left: 18px; }
+  .B .in .t .name { font-size: 26px; font-weight: 600; }
+  .B .in .t .st { font-size: 15px; color: #8c96a3; margin-top: 4px; }
+  .B .in .t .st.on { color: #f2b33d; }
+  .B .in .led { position: absolute; right: 48px; width: 12px; height: 12px; border-radius: 50%; background: #2a3038; }
+  .B .in .led.on { background: #f2b33d; box-shadow: 0 0 14px #f2b33d; }
+  .B .in:focus { background: #171c22; border-left-color: #f2b33d; }
+  .B .in:focus .n { color: #f2b33d; }
+  .B .right { flex: 1; position: relative; }
+  .B .clock { position: absolute; right: 64px; top: 44px; font-size: 20px; color: #8c96a3; }
+  .B .apps { position: absolute; left: 56px; top: 104px; display: grid; grid-template-columns: repeat(3, 200px); gap: 20px; }
+  .B .app { height: 112px; border-radius: 8px; background: #171c22; position: relative; transition: transform 120ms; }
+  .B .app:focus { transform: scale(1.06); box-shadow: 0 0 0 4px #eef1f4; z-index: 2; }
+  .B .app .label { position: absolute; left: 16px; bottom: 12px; font-size: 20px; font-weight: 600; }
+  .B .app .sw { position: absolute; left: 16px; top: 14px; width: 28px; height: 28px; border-radius: 6px; }
+  .B .foot { position: absolute; left: 56px; bottom: 30px; color: #8c96a3; font-size: 14px; }
+
+  /* ---------- C. Menu card ---------- */
+  .C { background: #0b1020; color: #eceff4; }
+  .C .head { position: absolute; left: 96px; top: 56px; font-family: "Iowan Old Style", "Palatino", Georgia, serif; font-size: 44px; letter-spacing: -0.5px; }
+  .C .head small { display: block; font-family: -apple-system, "Helvetica Neue", Roboto, sans-serif; font-size: 16px; color: #7f8aa3; margin-top: 6px; letter-spacing: 0; }
+  .C .clock { position: absolute; right: 96px; top: 64px; font-size: 20px; color: #7f8aa3; }
+  .C ul { list-style: none; margin: 0; padding: 0; position: absolute; left: 80px; top: 168px; width: 1120px; }
+  .C li { display: flex; align-items: center; height: 64px; padding: 0 24px; border-radius: 12px; font-size: 30px; transition: background 100ms; }
+  .C li .r { margin-left: auto; font-size: 17px; color: #7f8aa3; }
+  .C li .r.on { color: #9ad5ff; }
+  .C li .k { width: 56px; color: #7f8aa3; font-size: 17px; }
+  .C li:focus { background: #1e2740; }
+  .C li:focus .r { color: #eceff4; }
+  .C .sep { height: 22px; }
+  .C .foot { position: absolute; left: 104px; bottom: 30px; color: #7f8aa3; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="intro">Three directions for the same five jobs: switch input, open an app, open USB, open settings, see what is connected. Click into a screen, then use the arrow keys. Enter shows what would launch. All three use only flat colour and one focus effect, so they render cheaply on the Mali-450.</div>
+
+<div class="caption">A. Rows <small>Lean take on the Apple TV idiom. Horizontal rows, one for inputs, one for apps, one for the device. Tiles scale on focus. App tiles would use each app's real banner image on the TV.</small></div>
+<div class="screen A">
+  <div class="now">HDMI 1 <span>playing now</span></div>
+  <div class="clock">21:42</div>
+  <div class="row" style="top: 118px;"><h2>Inputs</h2>
+    <div class="tiles">
+      <div class="tile input" tabindex="0" data-a="HDMI 1"><div class="state on">Connected</div><div class="label">HDMI 1</div></div>
+      <div class="tile input" tabindex="0" data-a="HDMI 2"><div class="state">No device</div><div class="label">HDMI 2</div></div>
+      <div class="tile input" tabindex="0" data-a="HDMI 3"><div class="state">No device</div><div class="label">HDMI 3</div></div>
+      <div class="tile input" tabindex="0" data-a="AV"><div class="state">No device</div><div class="label">AV</div></div>
+    </div></div>
+  <div class="row" style="top: 318px;"><h2>Apps</h2>
+    <div class="tiles">
+      <div class="tile app prime" tabindex="0" data-a="Prime Video"><div class="label">Prime Video</div></div>
+      <div class="tile app hotstar" tabindex="0" data-a="Hotstar"><div class="label">Hotstar</div></div>
+      <div class="tile app youtube" tabindex="0" data-a="YouTube"><div class="label">YouTube</div></div>
+      <div class="tile app appletv" tabindex="0" data-a="Apple TV"><div class="label">Apple TV</div></div>
+      <div class="tile app browser" tabindex="0" data-a="Browser"><div class="label">Browser</div></div>
+    </div></div>
+  <div class="row" style="top: 500px;"><h2>This TV</h2>
+    <div class="tiles">
+      <div class="tile app usb" tabindex="0" data-a="USB"><div class="label">USB drive</div></div>
+      <div class="tile app settings" tabindex="0" data-a="Settings"><div class="label">Settings</div></div>
+    </div></div>
+  <div class="foot" id="fA">Back returns to HDMI 1</div>
+</div>
+
+<div class="caption">B. Switchboard <small>Treats the TV as what it mostly is: a monitor with three ports. Inputs get the whole left panel with hardware-style numerals and an amber signal lamp. Apps sit in a compact grid on the right.</small></div>
+<div class="screen B">
+  <div class="left">
+    <h1>Inputs</h1>
+    <div class="inputs">
+      <div class="in" tabindex="0" data-a="HDMI 1"><div class="n">1</div><div class="t"><div class="name">HDMI 1</div><div class="st on">Signal</div></div><div class="led on"></div></div>
+      <div class="in" tabindex="0" data-a="HDMI 2"><div class="n">2</div><div class="t"><div class="name">HDMI 2</div><div class="st">Nothing connected</div></div><div class="led"></div></div>
+      <div class="in" tabindex="0" data-a="HDMI 3"><div class="n">3</div><div class="t"><div class="name">HDMI 3</div><div class="st">Nothing connected</div></div><div class="led"></div></div>
+      <div class="in" tabindex="0" data-a="AV"><div class="n" style="font-size:72px;letter-spacing:-2px;">AV</div><div class="t"><div class="name">Composite</div><div class="st">Nothing connected</div></div><div class="led"></div></div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="clock">21:42</div>
+    <div class="apps">
+      <div class="app" tabindex="0" data-a="Prime Video"><div class="sw" style="background:#00a8e1"></div><div class="label">Prime Video</div></div>
+      <div class="app" tabindex="0" data-a="Hotstar"><div class="sw" style="background:#1f3b8e"></div><div class="label">Hotstar</div></div>
+      <div class="app" tabindex="0" data-a="YouTube"><div class="sw" style="background:#e62117"></div><div class="label">YouTube</div></div>
+      <div class="app" tabindex="0" data-a="Apple TV"><div class="sw" style="background:#555"></div><div class="label">Apple TV</div></div>
+      <div class="app" tabindex="0" data-a="Browser"><div class="sw" style="background:#2f7d5a"></div><div class="label">Browser</div></div>
+      <div class="app" tabindex="0" data-a="USB"><div class="sw" style="background:#8c6a1a"></div><div class="label">USB drive</div></div>
+      <div class="app" tabindex="0" data-a="Settings"><div class="sw" style="background:#3b4252"></div><div class="label">Settings</div></div>
+    </div>
+    <div class="foot" id="fB">Back returns to HDMI 1</div>
+  </div>
+</div>
+
+<div class="caption">C. Menu card <small>The cheapest to draw and the fastest to read from the sofa: one typographic list, large type, status on the right edge. No images at all, so it is instant even on this TV. Serif heading would be a bundled font on the device.</small></div>
+<div class="screen C">
+  <div class="head">Good evening<small>HDMI 1 is playing. Pick where to go.</small></div>
+  <div class="clock">21:42</div>
+  <ul>
+    <li tabindex="0" data-a="HDMI 1"><span class="k">1</span>HDMI 1<span class="r on">Connected</span></li>
+    <li tabindex="0" data-a="HDMI 2"><span class="k">2</span>HDMI 2<span class="r">Nothing connected</span></li>
+    <li tabindex="0" data-a="HDMI 3"><span class="k">3</span>HDMI 3<span class="r">Nothing connected</span></li>
+    <li tabindex="0" data-a="AV"><span class="k">AV</span>Composite<span class="r">Nothing connected</span></li>
+    <div class="sep"></div>
+    <li tabindex="0" data-a="Prime Video"><span class="k"></span>Prime Video</li>
+    <li tabindex="0" data-a="Hotstar"><span class="k"></span>Hotstar</li>
+    <li tabindex="0" data-a="YouTube"><span class="k"></span>YouTube</li>
+    <li tabindex="0" data-a="Browser"><span class="k"></span>Browser</li>
+    <li tabindex="0" data-a="USB"><span class="k"></span>USB drive<span class="r">SanDisk 32 GB</span></li>
+    <li tabindex="0" data-a="Settings"><span class="k"></span>Settings</li>
+  </ul>
+  <div class="foot" id="fC">Back returns to HDMI 1</div>
+</div>
+
+<script>
+  // Spatial navigation per screen: nearest element in the arrow direction, like Android's focus search.
+  function items(screen) { return [...screen.querySelectorAll('[tabindex="0"]')]; }
+  function center(el) { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, r }; }
+  function next(screen, from, dir) {
+    const c = center(from); let best = null, bestScore = Infinity;
+    for (const el of items(screen)) { if (el === from) continue; const o = center(el);
+      const dx = o.x - c.x, dy = o.y - c.y;
+      let ok = dir === 'ArrowRight' ? dx > 10 && Math.abs(dy) < 60 : dir === 'ArrowLeft' ? dx < -10 && Math.abs(dy) < 60 : dir === 'ArrowDown' ? dy > 10 : dy < -10;
+      if (!ok) continue;
+      const score = (dir === 'ArrowUp' || dir === 'ArrowDown') ? Math.abs(dy) * 2 + Math.abs(dx) : Math.abs(dx) * 2 + Math.abs(dy);
+      if (score < bestScore) { bestScore = score; best = el; } }
+    return best;
+  }
+  document.addEventListener('keydown', e => {
+    const el = document.activeElement; const screen = el && el.closest && el.closest('.screen'); if (!screen) return;
+    if (e.key.startsWith('Arrow')) { const n = next(screen, el, e.key); if (n) n.focus(); e.preventDefault(); }
+    else if (e.key === 'Enter') { const f = screen.querySelector('.foot'); f.textContent = 'Would launch: ' + el.dataset.a; setTimeout(() => f.textContent = 'Back returns to HDMI 1', 1500); }
+  });
+  document.querySelectorAll('.screen').forEach(s => s.addEventListener('click', ev => { const t = ev.target.closest('[tabindex="0"]'); if (t) t.focus(); else items(s)[0].focus(); }));
+  const d = new Date(), t = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  document.querySelectorAll('.clock').forEach(c => c.textContent = t);
+  items(document.querySelector('.A'))[0].focus();
+</script>
+</body>
+</html>

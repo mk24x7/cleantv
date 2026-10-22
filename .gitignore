@@ -1,0 +1,16 @@
+# build output and IDE state
+.gradle/
+build/
+app/build/
+.idea/
+*.iml
+local.properties
+.DS_Store
+.kotlin/
+
+# signing material never goes public
+keystore/
+keystore.properties
+
+# brand artwork pulled from installed apps for the design mockups
+design/assets/

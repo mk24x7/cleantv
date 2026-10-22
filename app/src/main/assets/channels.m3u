@@ -1,0 +1,100 @@
+#EXTM3U
+# Lean TV bundled channel list. Copy to /sdcard/LeanTV/channels.m3u to customise.
+# Only official sources: Prasar Bharati and NIC HLS streams, and broadcasters' own YouTube live pages.
+# YouTube entries use the channel's /live page and are resolved to the current live video at tune time.
+# Verified 2026-10-23.
+
+#EXTINF:-1 tvg-id="dd-national" group-title="General",DD National
+https://www.youtube.com/@DoordarshanNational/live
+#EXTINF:-1 tvg-id="dd-bharati" group-title="General",DD Bharati
+https://www.youtube.com/@DDBharati/live
+#EXTINF:-1 tvg-id="dd-kisan" group-title="General",DD Kisan
+https://www.youtube.com/@DDKisan/live
+
+#EXTINF:-1 tvg-id="dd-news" group-title="News",DD News
+https://www.youtube.com/@DDNews/live
+#EXTINF:-1 tvg-id="dd-india" group-title="News",DD India
+https://www.youtube.com/@DDIndia/live
+#EXTINF:-1 tvg-id="aaj-tak" group-title="News",Aaj Tak
+https://www.youtube.com/@aajtak/live
+#EXTINF:-1 tvg-id="india-tv" group-title="News",India TV
+https://www.youtube.com/@IndiaTV/live
+#EXTINF:-1 tvg-id="abp-news" group-title="News",ABP News
+https://www.youtube.com/@ABPNEWS/live
+#EXTINF:-1 tvg-id="ndtv-24x7" group-title="News",NDTV 24x7
+https://www.youtube.com/@NDTV/live
+#EXTINF:-1 tvg-id="ndtv-india" group-title="News",NDTV India
+https://www.youtube.com/@ndtvindia/live
+#EXTINF:-1 tvg-id="republic-tv" group-title="News",Republic TV
+https://www.youtube.com/@RepublicWorld/live
+#EXTINF:-1 tvg-id="zee-news" group-title="News",Zee News
+https://www.youtube.com/@ZeeNews/live
+#EXTINF:-1 tvg-id="news18-india" group-title="News",News18 India
+https://www.youtube.com/@News18India/live
+#EXTINF:-1 tvg-id="cnn-news18" group-title="News",CNN-News18
+https://www.youtube.com/@CNNnews18/live
+#EXTINF:-1 tvg-id="times-now" group-title="News",Times Now
+https://www.youtube.com/@TimesNow/live
+#EXTINF:-1 tvg-id="mirror-now" group-title="News",Mirror Now
+https://www.youtube.com/@MirrorNow/live
+#EXTINF:-1 tvg-id="india-today" group-title="News",India Today
+https://www.youtube.com/@IndiaToday/live
+#EXTINF:-1 tvg-id="wion" group-title="News",WION
+https://www.youtube.com/@WION/live
+
+#EXTINF:-1 tvg-id="sansad-lok-sabha" group-title="Parliament",Sansad TV Lok Sabha
+https://playhls.media.nic.in/live/lstv/index.m3u8
+#EXTINF:-1 tvg-id="sansad-rajya-sabha" group-title="Parliament",Sansad TV Rajya Sabha
+https://playhls.media.nic.in/live/rstv/index.m3u8
+
+#EXTINF:-1 tvg-id="abp-majha" group-title="Regional",ABP Majha
+https://www.youtube.com/@abpmajhatv/live
+
+#EXTINF:-1 tvg-id="red-bull-tv" group-title="Entertainment",Red Bull TV
+https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8
+
+#EXTINF:-1 tvg-id="lofi-girl" group-title="Music",Lofi Girl
+https://www.youtube.com/@LofiGirl/live
+#EXTINF:-1 tvg-id="t-series" group-title="Music",T-Series
+https://www.youtube.com/@tseries/live
+
+#EXTINF:-1 tvg-id="chuchu-tv" group-title="Kids",ChuChu TV
+https://www.youtube.com/@ChuChuTV/live
+#EXTINF:-1 tvg-id="peppa-pig" group-title="Kids",Peppa Pig
+https://www.youtube.com/@PeppaPigOfficial/live
+
+#EXTINF:-1 tvg-id="dw-news" group-title="World",DW News
+https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8
+#EXTINF:-1 tvg-id="france-24" group-title="World",France 24 English
+https://static.france24.com/live/F24_EN_LO_HLS/live_web.m3u8
+#EXTINF:-1 tvg-id="al-jazeera" group-title="World",Al Jazeera English
+https://www.youtube.com/@AlJazeeraEnglish/live
+#EXTINF:-1 tvg-id="sky-news" group-title="World",Sky News
+https://www.youtube.com/@SkyNews/live
+#EXTINF:-1 tvg-id="cna" group-title="World",CNA
+https://www.youtube.com/@channelnewsasia/live
+#EXTINF:-1 tvg-id="euronews" group-title="World",Euronews
+https://www.youtube.com/@euronews/live
+#EXTINF:-1 tvg-id="bloomberg" group-title="World",Bloomberg TV
+https://bloomberg.com/media-manifest/streams/us.m3u8
+#EXTINF:-1 tvg-id="abc-australia" group-title="World",ABC News Australia
+https://www.youtube.com/@abcnewsaustralia/live
+#EXTINF:-1 tvg-id="nhk-world" group-title="World",NHK World Japan
+https://www.youtube.com/@NHKWORLDJAPAN/live
+#EXTINF:-1 tvg-id="trt-world" group-title="World",TRT World
+https://www.youtube.com/@TRTWorld/live
+#EXTINF:-1 tvg-id="abc-news-us" group-title="World",ABC News
+https://www.youtube.com/@ABCNews/live
+#EXTINF:-1 tvg-id="cbs-news" group-title="World",CBS News
+https://www.youtube.com/@CBSNews/live
+#EXTINF:-1 tvg-id="nbc-news" group-title="World",NBC News
+https://www.youtube.com/@NBCNews/live
+
+#EXTINF:-1 tvg-id="nasa-tv" group-title="Science",NASA TV
+https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8
+#EXTINF:-1 tvg-id="nasa-tv-media" group-title="Science",NASA TV Media
+https://ntv2.akamaized.net/hls/live/2013923/NASA-NTV2-HLS/master.m3u8
+#EXTINF:-1 tvg-id="nasa-youtube" group-title="Science",NASA Live
+https://www.youtube.com/@NASA/live
+#EXTINF:-1 tvg-id="isro" group-title="Science",ISRO
+https://www.youtube.com/@isroofficial5866/live

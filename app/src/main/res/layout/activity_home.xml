@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@color/bg_right">
+
+    <LinearLayout
+        android:id="@+id/leftPanel"
+        android:layout_width="360dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/bg_left"
+        android:paddingStart="40dp"
+        android:paddingTop="30dp"
+        android:paddingBottom="20dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/inputs"
+            android:textColor="@color/muted"
+            android:textSize="15sp"
+            android:layout_marginBottom="14dp" />
+
+        <LinearLayout
+            android:id="@+id/inputsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:clipChildren="false" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/qrBlock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingEnd="24dp"
+            android:visibility="gone">
+            <app.cleantv.sendtotv.QrView
+                android:id="@+id/qr"
+                android:layout_width="72dp"
+                android:layout_height="72dp" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="14dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/send_to_tv"
+                    android:textColor="@color/text"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/qrSub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/send_to_tv_sub"
+                    android:textColor="@color/muted"
+                    android:textSize="11sp"
+                    android:lineSpacingExtra="1dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/rightScroll"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="36dp"
+            android:paddingEnd="30dp"
+            android:paddingTop="30dp"
+            android:paddingBottom="30dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/apps"
+                    android:textColor="@color/muted"
+                    android:textSize="15sp" />
+                <LinearLayout
+                    android:id="@+id/indicators"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" />
+                <TextClock
+                    android:id="@+id/clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:format24Hour="HH:mm"
+                    android:format12Hour="h:mm"
+                    android:textColor="@color/muted"
+                    android:textSize="15sp" />
+            </FrameLayout>
+
+            <app.cleantv.ui.FlowLayout
+                android:id="@+id/appsGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:clipChildren="false"
+                android:clipToPadding="false" />
+
+            <TextView
+                android:id="@+id/storageHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="@string/storage"
+                android:textColor="@color/muted"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:id="@+id/storageRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:clipChildren="false" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="@string/settings_more"
+                android:textColor="@color/muted"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:id="@+id/systemRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:clipChildren="false" />
+
+            <TextView
+                android:id="@+id/hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/muted"
+                android:textSize="13sp"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

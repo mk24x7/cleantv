@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lean TV, direction B, revision 2</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; font-family: -apple-system, "Helvetica Neue", Roboto, Arial, sans-serif; }
+  .note { max-width: 1280px; margin: 24px auto 10px; color: #bbb; font-size: 14px; line-height: 1.5; }
+  .note b { color: #fff; }
+  .screen { width: 1280px; height: 720px; margin: 0 auto; position: relative; overflow: hidden; background: #101418; color: #eef1f4; display: flex; outline: 1px solid #000; }
+  [tabindex]:focus { outline: none; }
+
+  .left { width: 520px; height: 100%; background: #0a0c0f; position: relative; }
+  .left h1 { position: absolute; left: 64px; top: 44px; margin: 0; font-size: 20px; font-weight: 500; color: #8c96a3; }
+  .inputs { position: absolute; left: 64px; top: 104px; right: 0; }
+  .qr { position: absolute; left: 64px; bottom: 28px; display: flex; align-items: center; gap: 16px; }
+  .qr img { width: 92px; height: 92px; border-radius: 6px; background: #fff; padding: 4px; box-sizing: border-box; image-rendering: pixelated; }
+  .qr .t { font-size: 14px; color: #8c96a3; line-height: 1.45; max-width: 300px; }
+  .qr .t b { color: #eef1f4; font-weight: 600; display: block; font-size: 16px; margin-bottom: 2px; }
+
+  .in, .chan { position: relative; display: grid; grid-template-columns: 110px 1fr 60px; align-items: center; padding-left: 28px; border-left: 6px solid transparent; transition: background 120ms, border-color 120ms; }
+  .in { height: 112px; }
+  .in .n { font-family: "Roboto Condensed", "Arial Narrow", "Helvetica Neue", sans-serif; font-stretch: condensed; font-weight: 800; font-size: 92px; line-height: 1; letter-spacing: -4px; }
+  .in .n.av { font-size: 64px; letter-spacing: -2px; }
+  .in .name { font-size: 26px; font-weight: 600; }
+  .in .st { font-size: 15px; color: #8c96a3; margin-top: 4px; }
+  .in .st.on { color: #34c759; }
+  .in .led, .chan .led { width: 12px; height: 12px; border-radius: 50%; background: #2a3038; justify-self: center; }
+  .in .led.on { background: #34c759; box-shadow: 0 0 14px rgba(52,199,89,.9); }
+  .in:focus, .chan:focus { background: #171c22; border-left-color: #eef1f4; }
+  .in.off { height: 64px; }
+  .in.off .n { font-size: 36px; letter-spacing: -1px; color: #6b7482; padding-left: 6px; }
+  .in.off .n.av { font-size: 28px; letter-spacing: 0; }
+  .in.off .name { font-size: 20px; font-weight: 500; color: #aeb5c1; }
+  .in.off .st { display: none; }
+  .in.off .led { width: 8px; height: 8px; }
+  .in.off:focus .name, .in.off:focus .n { color: #eef1f4; }
+  .inputs .in.off + .in.off { margin-top: 2px; }
+  .chan { height: 84px; margin-top: 18px; }
+  .chan svg { width: 36px; height: 36px; margin-left: 6px; }
+  .chan .name { font-size: 22px; font-weight: 600; }
+  .chan .st { font-size: 14px; color: #8c96a3; margin-top: 3px; }
+  .chlist { position: absolute; inset: 0; background: #0a0c0f; display: none; }
+  .chlist.show { display: block; }
+  .chlist h1 { position: absolute; left: 64px; top: 44px; margin: 0; font-size: 20px; font-weight: 500; color: #8c96a3; }
+  .chlist ul { list-style: none; margin: 0; padding: 0; position: absolute; left: 64px; right: 0; top: 96px; }
+  .chlist li { display: flex; align-items: center; height: 64px; padding-left: 28px; border-left: 6px solid transparent; font-size: 22px; font-weight: 600; }
+  .chlist li .n { width: 56px; color: #8c96a3; font-size: 16px; font-weight: 500; }
+  .chlist li .g { margin-left: auto; margin-right: 48px; font-size: 14px; color: #8c96a3; font-weight: 400; }
+  .chlist li:focus { background: #171c22; border-left-color: #eef1f4; }
+  .right { flex: 1; position: relative; }
+  .clock { position: absolute; right: 64px; top: 44px; font-size: 20px; color: #8c96a3; }
+  .right h1 { position: absolute; left: 56px; top: 44px; margin: 0; font-size: 20px; font-weight: 500; color: #8c96a3; }
+  .sec { position: absolute; left: 56px; width: 660px; }
+  .sec h2 { margin: 0 0 12px 0; font-size: 17px; font-weight: 500; color: #8c96a3; }
+  .pills { display: flex; gap: 16px; }
+  .pill { width: 210px; height: 68px; border-radius: 8px; background: #171c22; position: relative; display: flex; align-items: center; padding-left: 14px; box-sizing: border-box; transition: transform 120ms, box-shadow 120ms; }
+  .pill svg { width: 26px; height: 26px; flex: 0 0 auto; }
+  .pill .tx { margin-left: 12px; }
+  .pill .tx .l { font-size: 17px; font-weight: 600; line-height: 1.15; }
+  .pill .tx .s { font-size: 13px; color: #8c96a3; margin-top: 2px; }
+  .pill:focus { transform: scale(1.05); box-shadow: 0 0 0 4px #eef1f4; z-index: 2; }
+  .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+  .app { width: 200px; height: 112px; border-radius: 8px; background: #171c22; position: relative; overflow: hidden; transition: transform 120ms, box-shadow 120ms; }
+  .app img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .app:focus { transform: scale(1.06); box-shadow: 0 0 0 4px #eef1f4; z-index: 2; }
+  .app.moving { box-shadow: 0 0 0 4px #34c759, 0 0 24px rgba(52,199,89,.5); transform: scale(1.1); z-index: 3; }
+  .app .label { position: absolute; left: 16px; bottom: 12px; font-size: 20px; font-weight: 600; }
+  .app .sub { position: absolute; left: 16px; bottom: 40px; font-size: 14px; color: #8c96a3; }
+  .app.hotstar { background: #0f1b3d; }
+  .app.hotstar .label { color: #fff; }
+  .app svg { position: absolute; left: 16px; top: 14px; width: 30px; height: 30px; }
+  .app.usb { background: #1c2128; }
+  .app.settings { background: #171c22; }
+  .hint { position: absolute; left: 56px; bottom: 30px; color: #8c96a3; font-size: 14px; opacity: 0; transition: opacity 150ms; }
+  .hint.show { opacity: 1; }
+
+  .chooser { position: absolute; inset: 0; background: rgba(6,8,10,.72); display: none; align-items: center; justify-content: center; z-index: 10; }
+  .chooser.show { display: flex; }
+  .chooser .box { width: 560px; background: #0f1317; border-radius: 12px; padding: 26px 28px 22px; box-shadow: 0 30px 80px rgba(0,0,0,.7); }
+  .chooser h3 { margin: 0 0 6px; font-size: 24px; font-weight: 600; }
+  .chooser p { margin: 0 0 18px; color: #8c96a3; font-size: 15px; }
+  .chooser .opt { display: flex; align-items: center; height: 56px; padding: 0 16px; border-radius: 8px; font-size: 20px; font-weight: 600; }
+  .chooser .opt span { margin-left: auto; font-size: 14px; color: #8c96a3; font-weight: 400; }
+  .chooser .opt:focus { background: #1b222b; box-shadow: inset 4px 0 0 #eef1f4; }
+  #saver { position: absolute; inset: 0; background: #000; display: none; z-index: 20; }
+  #saver.show { display: block; }
+</style>
+</head>
+<body>
+<div class="note"><b>Direction B, revision 8.</b> Left panel realigned on one grid. Inputs with nothing connected collapse to one line and expand on focus. A Send to TV code sits bottom left; it changes each session so only someone in the room can use it. Right panel split into Apps, Storage, and Settings and more. Press Enter on Screensaver to pick one and start it; any key exits. All app tiles are the apps' own banners, pulled from the APKs on your TV. Green means connected. The apps grid is built from whatever is installed and enabled, in this demo exactly what your TV has today. Each mounted USB volume is its own tile with its label and size. <b>Hold Enter</b> on an app to pick it up, move it with the arrow keys, press Enter to drop. Settings always stays last.</div>
+
+<div class="screen">
+  <div class="left">
+    <h1>Inputs</h1>
+    <div class="inputs">
+      <div class="in" tabindex="0" data-a="HDMI 1"><div class="n">1</div><div class="t"><div class="name">HDMI 1</div><div class="st on">Connected</div></div><div class="led on"></div></div>
+      <div class="in off" tabindex="0" data-a="HDMI 2"><div class="n">2</div><div class="t"><div class="name">HDMI 2</div><div class="st">Nothing connected</div></div><div class="led"></div></div>
+      <div class="in off" tabindex="0" data-a="HDMI 3"><div class="n">3</div><div class="t"><div class="name">HDMI 3</div><div class="st">Nothing connected</div></div><div class="led"></div></div>
+      <div class="in off" tabindex="0" data-a="AV"><div class="n av">AV</div><div class="t"><div class="name">Composite</div><div class="st">Nothing connected</div></div><div class="led"></div></div>
+      <div class="chan" tabindex="0" data-a="Channels">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#eef1f4" stroke-width="1.7"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M8 3l4 4 4-4"/></svg>
+        <div class="t"><div class="name">Channels</div><div class="st">Free live channels</div></div>
+        <div></div>
+      </div>
+    </div>
+    <div class="chlist" id="chlist">
+      <h1>Channels</h1>
+      <ul>
+        <li tabindex="-1" data-a="DD National"><span class="n">1</span>DD National<span class="g">General</span></li>
+        <li tabindex="-1" data-a="DD News"><span class="n">2</span>DD News<span class="g">News</span></li>
+        <li tabindex="-1" data-a="DD Sports"><span class="n">3</span>DD Sports<span class="g">Sports</span></li>
+        <li tabindex="-1" data-a="DD Bharati"><span class="n">4</span>DD Bharati<span class="g">Culture</span></li>
+        <li tabindex="-1" data-a="DD India"><span class="n">5</span>DD India<span class="g">News</span></li>
+        <li tabindex="-1" data-a="Sansad TV"><span class="n">6</span>Sansad TV<span class="g">Parliament</span></li>
+      </ul>
+    </div>
+    <div class="qr"><img src="assets/qr-demo.png" alt=""><div class="t"><b>Send to TV</b>Scan to drop a video, play a link, or start a photo slideshow from your phone or laptop.</div></div>
+  </div>
+  <div class="right">
+    <div class="clock">21:42</div>
+    <div class="sec" style="top: 44px;"><h2>Apps</h2>
+      <div class="grid" id="grid">
+        <div class="app" tabindex="0" data-a="YouTube" data-move="1"><img src="assets/com.google.android.youtube.tv.png" alt=""></div>
+        <div class="app" tabindex="0" data-a="Prime Video" data-move="1"><img src="assets/com.amazon.amazonvideo.livingroom.png" alt=""></div>
+        <div class="app" tabindex="0" data-a="Hotstar" data-move="1"><img src="assets/in.startv.hotstar.png" alt=""></div>
+        <div class="app" tabindex="0" data-a="SonyLIV" data-move="1"><img src="assets/com.sonyliv.webp" alt=""></div>
+      </div>
+    </div>
+    <div class="sec" style="top: 346px;"><h2>Storage</h2>
+      <div class="pills">
+        <div class="pill" tabindex="0" data-a="USB: SanDisk"><svg viewBox="0 0 24 24" fill="none" stroke="#eef1f4" stroke-width="1.7"><rect x="4" y="9" width="16" height="7" rx="1.5"/><path d="M8 9V6h8v3"/><path d="M9 12h2M13 12h2"/></svg><div class="tx"><div class="l">SanDisk 32 GB</div><div class="s">29.1 GB free</div></div></div>
+        <div class="pill" tabindex="0" data-a="USB: Seagate"><svg viewBox="0 0 24 24" fill="none" stroke="#eef1f4" stroke-width="1.7"><rect x="4" y="9" width="16" height="7" rx="1.5"/><path d="M8 9V6h8v3"/><path d="M9 12h2M13 12h2"/></svg><div class="tx"><div class="l">Seagate 1 TB</div><div class="s">612 GB free</div></div></div>
+      </div>
+    </div>
+    <div class="sec" style="top: 476px;"><h2>Settings and more</h2>
+      <div class="pills">
+        <div class="pill" tabindex="0" data-a="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="#eef1f4" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><div class="tx"><div class="l">Settings</div><div class="s">Network, display, apps</div></div></div>
+        <div class="pill" tabindex="0" data-a="Screensaver"><svg viewBox="0 0 24 24" fill="none" stroke="#eef1f4" stroke-width="1.7"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><div class="tx"><div class="l">Screensaver</div><div class="s">Start now or choose one</div></div></div>
+      </div>
+    </div>
+    <div class="hint" id="hint"></div>
+  <div class="chooser" id="chooser"><div class="box">
+    <h3>Screensaver</h3><p>Starts now and becomes the idle screensaver.</p>
+    <div class="opt" tabindex="-1" data-s="mystify">Mystify<span>bouncing ribbons</span></div>
+    <div class="opt" tabindex="-1" data-s="starfield">Starfield<span>flying through space</span></div>
+    <div class="opt" tabindex="-1" data-s="pipes">Pipes<span>growing pipework</span></div>
+    <div class="opt" tabindex="-1" data-s="off">Off<span>screen stays as is</span></div>
+  </div></div>
+  <canvas id="saver" width="1280" height="720"></canvas>
+  </div>
+</div>
+
+<script>
+  const screen = document.querySelector('.screen'), grid = document.getElementById('grid'), hint = document.getElementById('hint');
+  let moving = null, holdTimer = null, held = false;
+  function items() { return [...screen.querySelectorAll('[tabindex="0"]')]; }
+  function center(el) { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+  function next(from, dir) {
+    const c = center(from); let best = null, bestScore = Infinity;
+    for (const el of items()) { if (el === from) continue; const o = center(el); const dx = o.x - c.x, dy = o.y - c.y;
+      const ok = dir === 'ArrowRight' ? dx > 10 && Math.abs(dy) < 60 : dir === 'ArrowLeft' ? dx < -10 && Math.abs(dy) < 60 : dir === 'ArrowDown' ? dy > 10 : dy < -10;
+      if (!ok) continue; const s = (dir === 'ArrowUp' || dir === 'ArrowDown') ? Math.abs(dy) * 2 + Math.abs(dx) : Math.abs(dx) * 2 + Math.abs(dy);
+      if (s < bestScore) { bestScore = s; best = el; } }
+    return best;
+  }
+  function showHint(t) { hint.textContent = t; hint.classList.add('show'); }
+  function hideHint() { hint.classList.remove('show'); }
+  function moveTile(dir) {
+    const tiles = [...grid.querySelectorAll('.app[data-move]')]; const i = tiles.indexOf(moving);
+    const j = dir === 'ArrowRight' ? i + 1 : dir === 'ArrowLeft' ? i - 1 : dir === 'ArrowDown' ? i + 3 : i - 3;
+    if (j < 0 || j >= tiles.length) return;
+    const target = tiles[j];
+    if (j > i) target.after(moving); else target.before(moving);
+    moving.focus();
+  }
+  document.addEventListener('keydown', e => {
+    const el = document.activeElement; if (!el || !el.closest('.screen')) return;
+    if (moving) {
+      if (e.key.startsWith('Arrow')) { moveTile(e.key); e.preventDefault(); }
+      else if (e.key === 'Enter' && !e.repeat) { moving.classList.remove('moving'); moving = null; showHint('Order saved'); setTimeout(hideHint, 1200); }
+      else if (e.key === 'Escape' || e.key === 'Backspace') { moving.classList.remove('moving'); moving = null; hideHint(); }
+      return;
+    }
+    if (e.key.startsWith('Arrow')) { const n = next(el, e.key); if (n) n.focus(); e.preventDefault(); }
+    else if (e.key === 'Enter' && !e.repeat) {
+      held = false;
+      if (el.dataset.move) holdTimer = setTimeout(() => { held = true; moving = el; el.classList.add('moving'); showHint('Move with the arrow keys, Enter to place, Back to cancel'); }, 550);
+    }
+  });
+  document.addEventListener('keyup', e => {
+    if (e.key !== 'Enter') return; clearTimeout(holdTimer);
+    if (!held && !moving) { const el = document.activeElement; if (el && el.dataset.a) { showHint('Opening ' + el.dataset.a); setTimeout(hideHint, 1200); } }
+  });
+  screen.addEventListener('click', ev => { const t = ev.target.closest('[tabindex="0"]'); if (t) t.focus(); });
+  const d = new Date(); document.querySelector('.clock').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  items()[0].focus();
+
+  // ---- screensaver chooser and three canvas savers (demo of what the TV build will draw) ----
+  const chooser = document.getElementById('chooser'), saver = document.getElementById('saver'), ctx = saver.getContext('2d');
+  let saverRaf = null, lastFocus = null;
+  function openChooser() { lastFocus = document.activeElement; chooser.classList.add('show'); chooser.querySelector('.opt').focus(); }
+  function closeChooser() { chooser.classList.remove('show'); if (lastFocus) lastFocus.focus(); }
+  function stopSaver() { if (saverRaf) cancelAnimationFrame(saverRaf); saverRaf = null; saver.classList.remove('show'); if (lastFocus) lastFocus.focus(); }
+  function startSaver(kind) {
+    closeChooser(); if (kind === 'off') return;
+    saver.classList.add('show'); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 1280, 720);
+    const W = 1280, H = 720;
+    if (kind === 'mystify') {
+      const polys = [0, 1].map(k => ({ pts: Array.from({length: 4}, () => ({x: Math.random()*W, y: Math.random()*H, vx: (Math.random()*4+2)*(Math.random()<.5?-1:1), vy: (Math.random()*4+2)*(Math.random()<.5?-1:1)})), hue: k ? 200 : 320, trail: [] }));
+      const step = () => {
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+        for (const p of polys) {
+          for (const v of p.pts) { v.x += v.vx; v.y += v.vy; if (v.x < 0 || v.x > W) v.vx *= -1; if (v.y < 0 || v.y > H) v.vy *= -1; }
+          p.trail.push(p.pts.map(v => ({x: v.x, y: v.y}))); if (p.trail.length > 14) p.trail.shift(); p.hue = (p.hue + 0.6) % 360;
+          p.trail.forEach((t, i) => { ctx.beginPath(); t.forEach((v, j) => j ? ctx.lineTo(v.x, v.y) : ctx.moveTo(v.x, v.y)); ctx.closePath(); ctx.strokeStyle = `hsla(${p.hue + i*4}, 100%, 60%, ${(i+1)/p.trail.length})`; ctx.lineWidth = 2; ctx.stroke(); });
+        }
+        saverRaf = requestAnimationFrame(step); };
+      step();
+    } else if (kind === 'starfield') {
+      const stars = Array.from({length: 260}, () => ({x: (Math.random()-.5)*W, y: (Math.random()-.5)*H, z: Math.random()*W}));
+      const step = () => {
+        ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, 0, W, H);
+        for (const s of stars) { s.z -= 9; if (s.z <= 1) { s.x = (Math.random()-.5)*W; s.y = (Math.random()-.5)*H; s.z = W; }
+          const k = 300 / s.z, px = s.x*k + W/2, py = s.y*k + H/2, r = Math.max(0.5, (1 - s.z/W) * 3);
+          if (px < 0 || px > W || py < 0 || py > H) continue; ctx.fillStyle = `rgba(255,255,255,${1 - s.z/W})`; ctx.beginPath(); ctx.arc(px, py, r, 0, 6.28); ctx.fill(); }
+        saverRaf = requestAnimationFrame(step); };
+      step();
+    } else if (kind === 'pipes') {
+      const cell = 24, cols = W/cell|0, rows = H/cell|0; let used = new Set(), pipes = [], count = 0;
+      const colors = ['#2f9e6a', '#e0b23a', '#3b82f6', '#d9534f', '#9b59b6', '#eef1f4'];
+      function newPipe() { let x, y, tries = 0; do { x = Math.random()*cols|0; y = Math.random()*rows|0; } while (used.has(x+','+y) && ++tries < 50); used.add(x+','+y); return {x, y, dx: 1, dy: 0, c: colors[count++ % colors.length], len: 0}; }
+      for (let i = 0; i < 3; i++) pipes.push(newPipe());
+      const step = () => {
+        for (let i = 0; i < pipes.length; i++) { const p = pipes[i];
+          if (Math.random() < 0.18 || p.len === 0) { const d = [[1,0],[-1,0],[0,1],[0,-1]][Math.random()*4|0]; p.dx = d[0]; p.dy = d[1]; }
+          const nx = p.x + p.dx, ny = p.y + p.dy;
+          if (nx < 0 || ny < 0 || nx >= cols || ny >= rows || used.has(nx+','+ny) || p.len > 90) { if (used.size > cols*rows*0.55) { used = new Set(); ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H); } pipes[i] = newPipe(); continue; }
+          ctx.strokeStyle = p.c; ctx.lineWidth = 11; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(p.x*cell+cell/2, p.y*cell+cell/2); ctx.lineTo(nx*cell+cell/2, ny*cell+cell/2); ctx.stroke();
+          ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(nx*cell+cell/2, ny*cell+cell/2, 7, 0, 6.28); ctx.fill();
+          p.x = nx; p.y = ny; p.len++; used.add(nx+','+ny); }
+        saverRaf = setTimeout(() => { saverRaf = requestAnimationFrame(step); }, 40); };
+      step();
+    }
+  }
+  document.addEventListener('keydown', e => {
+    if (saver.classList.contains('show')) { stopSaver(); e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (chooser.classList.contains('show')) {
+      const opts = [...chooser.querySelectorAll('.opt')], i = opts.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') opts[Math.min(i+1, opts.length-1)].focus();
+      else if (e.key === 'ArrowUp') opts[Math.max(i-1, 0)].focus();
+      else if (e.key === 'Enter') startSaver(document.activeElement.dataset.s);
+      else if (e.key === 'Escape' || e.key === 'Backspace') closeChooser();
+      e.preventDefault(); e.stopImmediatePropagation(); return;
+    }
+    if (e.key === 'Enter' && !e.repeat && document.activeElement.dataset.a === 'Screensaver') { openChooser(); e.preventDefault(); e.stopImmediatePropagation(); }
+  }, true);
+  const chlist = document.getElementById('chlist'); let chFrom = null;
+  document.addEventListener('keydown', e => {
+    if (chlist.classList.contains('show')) {
+      const li = [...chlist.querySelectorAll('li')], i = li.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') li[Math.min(i+1, li.length-1)].focus();
+      else if (e.key === 'ArrowUp') li[Math.max(i-1, 0)].focus();
+      else if (e.key === 'Enter') { showHint('Tuning ' + document.activeElement.dataset.a); setTimeout(hideHint, 1200); }
+      else if (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'ArrowRight') { chlist.classList.remove('show'); (chFrom || items()[0]).focus(); }
+      e.preventDefault(); e.stopImmediatePropagation(); return;
+    }
+    if (e.key === 'Enter' && !e.repeat && document.activeElement.dataset.a === 'Channels') { chFrom = document.activeElement; chlist.classList.add('show'); chlist.querySelector('li').focus(); e.preventDefault(); e.stopImmediatePropagation(); }
+  }, true);
+  chooser.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => startSaver(o.dataset.s)));
+  saver.addEventListener('click', stopSaver);
+</script>
+</body>
+</html>
