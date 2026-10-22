@@ -95,7 +95,7 @@ class SaverView(context: Context, private val mode: String, t0: Long = 30L * 60_
     private var headSpeed: FloatArray = FloatArray(0)
     private var matrixBitmap: Bitmap? = null
     private var matrixCanvas: Canvas? = null
-    private val matrixFade = Paint().apply { color = Color.argb(30, 0, 0, 0); style = Paint.Style.FILL }
+    private val matrixFade = Paint().apply { color = Color.argb(48, 0, 0, 0); style = Paint.Style.FILL }
     private val headPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFE8FFEC.toInt(); typeface = android.graphics.Typeface.DEFAULT_BOLD; textAlign = Paint.Align.CENTER }
     private val trailPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF22E85A.toInt(); typeface = android.graphics.Typeface.DEFAULT; textAlign = Paint.Align.CENTER }
     // half-width katakana, a handful of Chinese characters, digits and a few symbols
@@ -394,7 +394,7 @@ class SaverView(context: Context, private val mode: String, t0: Long = 30L * 60_
         mCols = (w / glyph).toInt().coerceAtLeast(1)
         mRows = (h / glyph).toInt().coerceAtLeast(1)
         headY = FloatArray(mCols) { -rnd.nextInt(mRows * 2).toFloat() }
-        headSpeed = FloatArray(mCols) { 0.35f + rnd.nextFloat() * 0.65f }
+        headSpeed = FloatArray(mCols) { 0.2f + rnd.nextFloat() * 0.35f }
         lastChar = CharArray(mCols) { glyphs[rnd.nextInt(glyphs.length)] }
         mTrail = IntArray(mCols) { 8 + rnd.nextInt(16) }
         headPaint.textSize = glyph
@@ -427,7 +427,7 @@ class SaverView(context: Context, private val mode: String, t0: Long = 30L * 60_
             }
             if (row > mRows + rnd.nextInt(8)) {
                 headY[i] = -rnd.nextInt(mRows).toFloat()
-                headSpeed[i] = 0.35f + rnd.nextFloat() * 0.65f
+                headSpeed[i] = 0.2f + rnd.nextFloat() * 0.35f
                 mTrail[i] = 8 + rnd.nextInt(16)
             }
         }
