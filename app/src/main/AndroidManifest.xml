@@ -58,7 +58,7 @@
             android:name=".saver.SaverActivity"
             android:screenOrientation="landscape"
             android:excludeFromRecents="true"
-            android:exported="false" />
+            android:exported="true" />
 
         <service
             android:name=".KeyFilterService"

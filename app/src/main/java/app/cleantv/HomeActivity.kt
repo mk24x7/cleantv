@@ -47,6 +47,7 @@ class HomeActivity : Activity() {
         const val ACTION_SHOW = "app.cleantv.SHOW"
         const val ACTION_TOGGLE = "app.cleantv.TOGGLE"
         private const val BOOT_WINDOW_MS = 10 * 60_000L
+        private const val SWEEP_DELAY_MS = 30_000L
     }
 
     private lateinit var inputs: Inputs
@@ -54,11 +55,16 @@ class HomeActivity : Activity() {
     private lateinit var inputsContainer: LinearLayout
     private lateinit var rightScroll: ScrollView
     private lateinit var appsGrid: FlowLayout
+    private lateinit var toolsHeader: TextView
+    private lateinit var toolsRow: FlowLayout
     private lateinit var storageHeader: TextView
     private lateinit var storageRow: LinearLayout
     private lateinit var systemRow: LinearLayout
     private lateinit var hint: TextView
     private val handler = Handler(Looper.getMainLooper())
+    /** Kills apps left in the background 30 s after the launcher was shown. A quick return to the app cancels it. */
+    private val sweepHandler = Handler(Looper.getMainLooper())
+    private val sweep = Runnable { Memory.freeUp(this) }
 
     private var movingTile: AppTileView? = null
     private var orderBeforeMove: List<String> = emptyList()
@@ -99,6 +105,8 @@ class HomeActivity : Activity() {
         inputsContainer = findViewById(R.id.inputsContainer)
         rightScroll = findViewById(R.id.rightScroll)
         appsGrid = findViewById(R.id.appsGrid)
+        toolsHeader = findViewById(R.id.toolsHeader)
+        toolsRow = findViewById(R.id.toolsRow)
         storageHeader = findViewById(R.id.storageHeader)
         storageRow = findViewById(R.id.storageRow)
         systemRow = findViewById(R.id.systemRow)
@@ -125,6 +133,8 @@ class HomeActivity : Activity() {
     override fun onResume() {
         super.onResume()
         visible = true
+        sweepHandler.removeCallbacks(sweep)
+        sweepHandler.postDelayed(sweep, SWEEP_DELAY_MS)
     }
 
     override fun onPause() {
@@ -250,8 +260,21 @@ class HomeActivity : Activity() {
     private fun renderApps() {
         val focusedPkg = (currentFocus as? AppTileView)?.app?.pkg
         appsGrid.removeAllViews()
+        toolsRow.removeAllViews()
         val w = appsGrid.dp(160f); val h = appsGrid.dp(90f)
-        for (app in Apps.list(this)) {
+        val all = Apps.list(this)
+        val tools = all.filter { Apps.isTool(it.pkg) }
+        toolsHeader.visibility = if (tools.isEmpty()) View.GONE else View.VISIBLE
+        toolsRow.visibility = toolsHeader.visibility
+        for (app in tools) {
+            val pill = PillView(this)
+            pill.bind(app.icon, app.label, null)
+            pill.layoutParams = ViewGroup.LayoutParams(toolsRow.dp(164f), toolsRow.dp(52f))
+            pill.setOnClickListener { if (!Apps.launch(this, app)) Toast.makeText(this, R.string.could_not_open, Toast.LENGTH_SHORT).show() }
+            pill.setOnLongClickListener { showToolMenu(pill, app); true }
+            toolsRow.addView(pill)
+        }
+        for (app in all.filter { !Apps.isTool(it.pkg) }) {
             val tile = AppTileView(this)
             tile.bind(app)
             tile.layoutParams = ViewGroup.LayoutParams(w, h)
@@ -352,6 +375,20 @@ class HomeActivity : Activity() {
         menu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 1 -> enterMoveMode(tile)
+                2 -> { Apps.hide(this, app.pkg); renderApps(); renderSystem() }
+                3 -> Apps.openAppInfo(this, app.pkg)
+            }
+            true
+        }
+        menu.show()
+    }
+
+    private fun showToolMenu(anchor: View, app: TvApp) {
+        val menu = PopupMenu(this, anchor)
+        menu.menu.add(0, 2, 0, R.string.hide)
+        menu.menu.add(0, 3, 1, R.string.app_info)
+        menu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
                 2 -> { Apps.hide(this, app.pkg); renderApps(); renderSystem() }
                 3 -> Apps.openAppInfo(this, app.pkg)
             }

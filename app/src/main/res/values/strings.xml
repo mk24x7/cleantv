@@ -31,4 +31,5 @@
     <string name="coming_soon">Coming in the next build</string>
     <string name="send_to_tv">Send to TV</string>
     <string name="send_to_tv_sub">Scan to play a video, a link or photos from your phone or laptop</string>
+    <string name="tools">Tools</string>
 </resources>

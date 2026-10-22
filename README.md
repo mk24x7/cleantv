@@ -1,5 +1,7 @@
 # Clean TV
 
+![Clean TV](art/banner-1280x640.png)
+
 A small, fast home screen for old Android TV sets. Built for a 2018 Mi TV 4A with 1 GB of RAM
 that had become unusable under PatchWall and the Google launcher. No background services, no
 recommendations, no accounts. Just inputs, channels, the apps you use, and a few tools.
@@ -36,10 +38,12 @@ Idle after setup on the Mi TV 4A: about 450 MB free of 1 GB, CPU under 20 percen
    `./gradlew :app:assembleDebug`
 2. Install and set as Home:
    `scripts/install.sh <tv-ip>`
-3. Optional, Xiaomi sets only: freeze PatchWall, telemetry and the Google launcher so nothing restarts in the
+3. Stop streaming apps from starting at boot and squatting in memory (they still open normally):
+   `scripts/restrict-background.sh <tv-ip>`
+4. Optional, Xiaomi sets only: freeze PatchWall, telemetry and the Google launcher so nothing restarts in the
    background. Everything it does is reversible:
    `scripts/freeze-xiaomi.sh <tv-ip>`
-4. Reboot once. The TV should come up on HDMI 1 with Home and the Mi button working.
+5. Reboot once. The TV should come up on HDMI 1 with Home and the Mi button working.
 
 To go back to the stock launcher: `scripts/rollback.sh <tv-ip>`.
 

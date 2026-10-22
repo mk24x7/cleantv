@@ -106,6 +106,14 @@ class PillView(ctx: Context) : FocusTile(ctx) {
         addView(row, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
     }
 
+    fun bind(iconDrawable: Drawable?, titleText: String, subText: String?) {
+        icon.setImageDrawable(iconDrawable)
+        title.text = titleText
+        sub.text = subText.orEmpty()
+        sub.visibility = if (subText.isNullOrEmpty()) View.GONE else View.VISIBLE
+        contentDescription = titleText
+    }
+
     fun bind(iconRes: Int, titleText: String, subText: String?) {
         icon.setImageResource(iconRes)
         title.text = titleText

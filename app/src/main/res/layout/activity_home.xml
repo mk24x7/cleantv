@@ -132,6 +132,23 @@
                 android:clipToPadding="false" />
 
             <TextView
+                android:id="@+id/toolsHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="@string/tools"
+                android:textColor="@color/muted"
+                android:textSize="15sp" />
+
+            <app.cleantv.ui.FlowLayout
+                android:id="@+id/toolsRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:clipChildren="false"
+                android:clipToPadding="false" />
+
+            <TextView
                 android:id="@+id/storageHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

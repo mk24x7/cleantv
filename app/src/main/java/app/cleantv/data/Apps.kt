@@ -15,7 +15,8 @@ data class TvApp(
     val label: String,
     val banner: Drawable?,
     /** True when the drawable is a 16:9 banner rather than a square icon. */
-    val isBanner: Boolean
+    val isBanner: Boolean,
+    val icon: Drawable?
 )
 
 object Apps {
@@ -34,10 +35,28 @@ object Apps {
         "com.google.android.youtube.tv",
         "in.startv.hotstar",
         "com.amazon.amazonvideo.livingroom",
+        "com.apple.atve.androidtv.appletv",
         "com.sonyliv",
         "com.google.android.youtube.tvmusic",
-        "com.mitv.tvhome.mitvplus"
+        "com.mitv.tvhome.mitvplus",
+        "org.videolan.vlc",
+        "com.phlox.tvwebbrowser",
+        "com.ionitech.airscreen",
+        "com.android.vending",
+        "com.xiaomi.mitv.mediaexplorer",
+        "com.mitv.videoplayer",
+        "com.mitv.gallery",
+        "com.google.android.play.games"
     )
+
+    /** Utilities shown in the compact Tools row instead of the banner grid. */
+    private val TOOLS = setOf(
+        "org.videolan.vlc", "com.phlox.tvwebbrowser", "com.ionitech.airscreen", "com.android.vending",
+        "com.xiaomi.mitv.mediaexplorer", "com.mitv.videoplayer", "com.mitv.gallery", "com.google.android.play.games",
+        "com.android.tv.settings", "com.google.android.tts"
+    )
+
+    fun isTool(pkg: String): Boolean = pkg in TOOLS
 
     fun list(ctx: Context, includeHidden: Boolean = false): List<TvApp> {
         val pm = ctx.packageManager
@@ -53,7 +72,7 @@ object Apps {
                 val ai = ri.activityInfo
                 var isBanner = true
                 val drawable = ai.loadBanner(pm) ?: ai.applicationInfo.loadBanner(pm) ?: run { isBanner = false; ri.loadIcon(pm) }
-                TvApp(ai.packageName, ComponentName(ai.packageName, ai.name), ri.loadLabel(pm).toString(), drawable, isBanner)
+                TvApp(ai.packageName, ComponentName(ai.packageName, ai.name), ri.loadLabel(pm).toString(), drawable, isBanner, ri.loadIcon(pm))
             }
             .toList()
         val order = Prefs.appOrder(ctx).ifEmpty { DEFAULT_ORDER }
