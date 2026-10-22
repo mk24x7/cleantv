@@ -25,8 +25,11 @@ object Prefs {
     fun setLastBootHandled(c: Context, bootTimeMillis: Long) = get(c).edit().putLong("last_boot", bootTimeMillis).apply()
 
     // Screensaver: "mystify" | "starfield" | "pipes" | "off"
-    fun saverMode(c: Context): String = get(c).getString("saver_mode", "mystify")!!
+    fun saverMode(c: Context): String = get(c).getString("saver_mode", "matrix")!!
     fun setSaverMode(c: Context, mode: String) = get(c).edit().putString("saver_mode", mode).apply()
+    /** Minutes without a key press on the launcher before the screensaver starts. */
+    fun saverDelayMin(c: Context): Int = get(c).getInt("saver_delay_min", 1)
+    fun setSaverDelayMin(c: Context, min: Int) = get(c).edit().putInt("saver_delay_min", min).apply()
 
     // Channels
     fun lastChannelId(c: Context): String? = get(c).getString("last_channel", null)

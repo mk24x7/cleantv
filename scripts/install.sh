@@ -13,6 +13,8 @@ adb shell settings put global verifier_verify_adb_installs 1
 
 # Lets the launcher set the system screensaver from its own menu.
 adb shell pm grant $PKG android.permission.WRITE_SECURE_SETTINGS
+# Lets the Send to TV panel show the Wi-Fi network name.
+adb shell pm grant $PKG android.permission.ACCESS_COARSE_LOCATION
 # Key filter: turns the remote's Mi (PatchWall) button into launcher toggle and screensaver.
 adb shell settings put secure enabled_accessibility_services $PKG/$PKG.KeyFilterService
 adb shell settings put secure accessibility_enabled 1

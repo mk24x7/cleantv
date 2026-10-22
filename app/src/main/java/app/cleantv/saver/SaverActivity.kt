@@ -24,6 +24,8 @@ class SaverActivity : Activity() {
         }
     }
 
+    private var saverView: SaverView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mode = intent?.getStringExtra(EXTRA_MODE) ?: Prefs.saverMode(this)
@@ -36,7 +38,8 @@ class SaverActivity : Activity() {
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        setContentView(SaverView(this, mode))
+        saverView = SaverView(this, mode, intent.getLongExtra("t0", 30L * 60_000L))
+        setContentView(saverView)
     }
 
     override fun onResume() {
@@ -50,6 +53,9 @@ class SaverActivity : Activity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE) {
+            return super.onKeyDown(keyCode, event)
+        }
         finish()
         return true
     }

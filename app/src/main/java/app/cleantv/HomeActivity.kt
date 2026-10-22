@@ -30,6 +30,8 @@ import app.cleantv.saver.SaverChooser
 import app.cleantv.sendtotv.QrView
 import app.cleantv.sendtotv.RemotePlayerActivity
 import app.cleantv.sendtotv.SendToTv
+import app.cleantv.sendtotv.SendToTvDialog
+import android.graphics.drawable.GradientDrawable
 import app.cleantv.ui.ActionRowView
 import app.cleantv.ui.AppTileView
 import app.cleantv.ui.FlowLayout
@@ -65,6 +67,11 @@ class HomeActivity : Activity() {
     /** Kills apps left in the background 30 s after the launcher was shown. A quick return to the app cancels it. */
     private val sweepHandler = Handler(Looper.getMainLooper())
     private val sweep = Runnable { Memory.freeUp(this) }
+    /** Launcher-only screensaver: starts after a minute without a key press while this screen is showing. */
+    private val idle = Runnable {
+        val mode = Prefs.saverMode(this)
+        if (visible && mode != "off") SaverActivity.start(this, mode)
+    }
 
     private var movingTile: AppTileView? = null
     private var orderBeforeMove: List<String> = emptyList()
@@ -114,6 +121,14 @@ class HomeActivity : Activity() {
         qrBlock = findViewById(R.id.qrBlock)
         qr = findViewById(R.id.qr)
         indicators = findViewById(R.id.indicators)
+        val qrFrame: View = findViewById(R.id.qrFrame)
+        qrFrame.background = GradientDrawable().apply { setColor(getColor(R.color.text)); cornerRadius = qrFrame.dp(6f).toFloat() }
+        qrBlock.setOnFocusChangeListener { _, f ->
+            val sc = if (f) 1.06f else 1f
+            qrFrame.animate().scaleX(sc).scaleY(sc).setDuration(120).start()
+            qrFrame.foreground = if (f) GradientDrawable().apply { setColor(0); setStroke(qrFrame.dp(4f), getColor(R.color.green)); cornerRadius = qrFrame.dp(6f).toFloat() } else null
+        }
+        qrBlock.setOnClickListener { SendToTvDialog.show(this) }
         buildIndicators()
         renderAll()
         handleHomeIntent(intent)
@@ -135,11 +150,18 @@ class HomeActivity : Activity() {
         visible = true
         sweepHandler.removeCallbacks(sweep)
         sweepHandler.postDelayed(sweep, SWEEP_DELAY_MS)
+        armIdle()
+    }
+
+    private fun armIdle() {
+        handler.removeCallbacks(idle)
+        handler.postDelayed(idle, Prefs.saverDelayMin(this) * 60_000L)
     }
 
     override fun onPause() {
         super.onPause()
         visible = false
+        handler.removeCallbacks(idle)
     }
 
     override fun onStart() {
@@ -156,6 +178,7 @@ class HomeActivity : Activity() {
         })
         renderAll()
         startSendToTv()
+        ensureKeyFilterEnabled()
         handler.post(memoryTick)
         if (currentFocus == null) inputsContainer.getChildAt(0)?.requestFocus()
     }
@@ -177,6 +200,7 @@ class HomeActivity : Activity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN) armIdle()
         val tile = movingTile
         if (tile != null && event.action == KeyEvent.ACTION_DOWN) {
             val i = appsGrid.indexOfChild(tile)
@@ -311,7 +335,6 @@ class HomeActivity : Activity() {
             setOnClickListener {
                 SaverChooser.show(this@HomeActivity) { mode ->
                     Prefs.setSaverMode(this@HomeActivity, mode)
-                    SaverChooser.applySystemSaver(this@HomeActivity, mode)
                     if (mode != "off") SaverActivity.start(this@HomeActivity, mode)
                 }
             }
@@ -434,6 +457,23 @@ class HomeActivity : Activity() {
                 renderApps(); renderSystem()
             }
             .show()
+    }
+
+    /** Updates unbind the key filter; when it is not live, rewrite the setting so the system rebinds it. */
+    private fun ensureKeyFilterEnabled() {
+        try {
+            val am = getSystemService(android.view.accessibility.AccessibilityManager::class.java) ?: return
+            val live = am.getEnabledAccessibilityServiceList(android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+                .any { it.resolveInfo.serviceInfo.packageName == packageName }
+            if (live) return
+            val cr = contentResolver
+            val me = "$packageName/${KeyFilterService::class.java.name}"
+            val others = Settings.Secure.getString(cr, "enabled_accessibility_services").orEmpty()
+                .split(':').filter { it.isNotEmpty() && it != me }
+            Settings.Secure.putString(cr, "enabled_accessibility_services", others.joinToString(":"))
+            Settings.Secure.putString(cr, "enabled_accessibility_services", (others + me).joinToString(":"))
+            Settings.Secure.putInt(cr, "accessibility_enabled", 1)
+        } catch (e: SecurityException) { }
     }
 
     private fun startSendToTv() {

@@ -43,12 +43,20 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:focusable="true"
+            android:clickable="true"
             android:paddingEnd="24dp"
             android:visibility="gone">
-            <app.cleantv.sendtotv.QrView
-                android:id="@+id/qr"
+            <FrameLayout
+                android:id="@+id/qrFrame"
                 android:layout_width="72dp"
-                android:layout_height="72dp" />
+                android:layout_height="72dp"
+                android:padding="4dp">
+                <app.cleantv.sendtotv.QrView
+                    android:id="@+id/qr"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </FrameLayout>
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

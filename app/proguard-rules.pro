@@ -1,0 +1,4 @@
+-keep class app.cleantv.** { *; }
+-keep class fi.iki.elonen.** { *; }
+-dontwarn fi.iki.elonen.**
+-dontwarn org.nanohttpd.**

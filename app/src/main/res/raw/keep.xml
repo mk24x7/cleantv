@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/key_filter_label,@string/key_filter_desc,@string/saver_label,@xml/key_filter" />

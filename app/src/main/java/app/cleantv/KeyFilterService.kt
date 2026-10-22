@@ -27,6 +27,7 @@ class KeyFilterService : AccessibilityService() {
     }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_VOLUME_UP || event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) return handleVolume(event)
         if (event.keyCode != KeyEvent.KEYCODE_BUTTON_2) return false
         when (event.action) {
             KeyEvent.ACTION_DOWN -> {
@@ -43,6 +44,46 @@ class KeyFilterService : AccessibilityService() {
             }
         }
         return true
+    }
+
+    // With a key filter installed the system no longer synthesises key repeats, so a held volume key
+    // would only step once. Drive the volume here instead and repeat while the key stays down.
+    private val volumeHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var volumeDirection = 0
+    private val volumeRepeat = object : Runnable {
+        override fun run() {
+            if (volumeDirection == 0) return
+            adjustVolume(volumeDirection)
+            volumeHandler.postDelayed(this, VOLUME_REPEAT_MS)
+        }
+    }
+
+    private fun handleVolume(event: KeyEvent): Boolean {
+        val dir = if (event.keyCode == KeyEvent.KEYCODE_VOLUME_UP) 1 else -1
+        when (event.action) {
+            KeyEvent.ACTION_DOWN -> if (event.repeatCount == 0) {
+                volumeDirection = dir
+                adjustVolume(dir)
+                volumeHandler.removeCallbacks(volumeRepeat)
+                volumeHandler.postDelayed(volumeRepeat, VOLUME_FIRST_REPEAT_MS)
+            }
+            KeyEvent.ACTION_UP -> {
+                volumeDirection = 0
+                volumeHandler.removeCallbacks(volumeRepeat)
+            }
+        }
+        return true
+    }
+
+    private fun adjustVolume(dir: Int) {
+        val am = getSystemService(android.media.AudioManager::class.java) ?: return
+        try {
+            am.adjustStreamVolume(
+                android.media.AudioManager.STREAM_MUSIC,
+                if (dir > 0) android.media.AudioManager.ADJUST_RAISE else android.media.AudioManager.ADJUST_LOWER,
+                android.media.AudioManager.FLAG_SHOW_UI
+            )
+        } catch (e: SecurityException) { }
     }
 
     private fun toggleLauncher() {
@@ -62,5 +103,7 @@ class KeyFilterService : AccessibilityService() {
 
     companion object {
         private const val LONG_PRESS_MS = 600L
+        private const val VOLUME_FIRST_REPEAT_MS = 350L
+        private const val VOLUME_REPEAT_MS = 110L
     }
 }

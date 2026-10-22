@@ -13,7 +13,7 @@
     <string name="settings">Settings</string>
     <string name="settings_sub">Network and display</string>
     <string name="screensaver">Screensaver</string>
-    <string name="screensaver_sub">Pick one and start</string>
+    <string name="screensaver_sub">After a minute idle here</string>
     <string name="hidden_apps">Hidden apps</string>
     <string name="hidden_apps_sub">Show an app again</string>
     <string name="move">Move</string>
@@ -30,6 +30,10 @@
     <string name="could_not_open">Could not open that app</string>
     <string name="coming_soon">Coming in the next build</string>
     <string name="send_to_tv">Send to TV</string>
-    <string name="send_to_tv_sub">Scan to play a video, a link or photos from your phone or laptop</string>
     <string name="tools">Tools</string>
+    <string name="send_to_tv_sub">Scan to play a video, a link or photos from your phone or laptop</string>
+    <string name="send_to_tv_dialog_sub">Scan with a phone, or type the address on a laptop</string>
+    <string name="send_to_tv_manual">Manual connection</string>
+    <string name="send_to_tv_network">Wi-Fi network: %1$s</string>
+    <string name="send_to_tv_same_network">Device must be on the same Wi-Fi as the TV</string>
 </resources>

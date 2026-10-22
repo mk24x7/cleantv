@@ -17,6 +17,7 @@ import android.view.Window
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import app.cleantv.Prefs
 import app.cleantv.R
 
 /** D-pad screensaver picker and system screensaver registration. */
@@ -26,6 +27,7 @@ object SaverChooser {
         Triple("mystify", R.string.saver_mystify, R.string.saver_mystify_sub),
         Triple("starfield", R.string.saver_starfield, R.string.saver_starfield_sub),
         Triple("pipes", R.string.saver_pipes, R.string.saver_pipes_sub),
+        Triple("matrix", R.string.saver_matrix, R.string.saver_matrix_sub),
         Triple("off", R.string.saver_off, R.string.saver_off_sub)
     )
 
@@ -81,6 +83,24 @@ object SaverChooser {
         dialog.setCancelable(true)
         dialog.setCanceledOnTouchOutside(true)
         dialog.window?.setLayout(dp(420f), ViewGroup.LayoutParams.WRAP_CONTENT)
+        // Delay row: OK cycles through the choices and saves at once.
+        val delays = intArrayOf(1, 2, 5, 10, 15)
+        val delayRow = buildRow(activity, dp(56f), dp(12f), R.string.saver_delay, R.string.saver_delay_sub, text, muted, d)
+        val delaySub = (delayRow as ViewGroup).getChildAt(1) as TextView
+        fun renderDelay() { delaySub.text = activity.getString(R.string.saver_delay_value, Prefs.saverDelayMin(activity)) }
+        renderDelay()
+        val cycle = {
+            val cur = Prefs.saverDelayMin(activity)
+            val next = delays[(delays.indexOf(cur).coerceAtLeast(0) + 1) % delays.size]
+            Prefs.setSaverDelayMin(activity, next)
+            renderDelay()
+        }
+        delayRow.setOnClickListener { cycle() }
+        delayRow.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)) { cycle(); true } else false
+        }
+        (delayRow.layoutParams as LinearLayout.LayoutParams).topMargin = dp(10f)
+        root.addView(delayRow)
         dialog.show()
         first?.requestFocus()
     }

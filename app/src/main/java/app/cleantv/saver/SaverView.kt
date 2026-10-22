@@ -14,12 +14,13 @@ import kotlin.random.Random
  * Cheap canvas screensaver. Modes: "mystify", "starfield", "pipes".
  * All state is preallocated; the frame loop allocates nothing.
  */
-class SaverView(context: Context, private val mode: String) : View(context) {
+class SaverView(context: Context, private val mode: String, t0: Long = 30L * 60_000L) : View(context) {
 
     companion object {
         const val MODE_MYSTIFY = "mystify"
         const val MODE_STARFIELD = "starfield"
         const val MODE_PIPES = "pipes"
+        const val MODE_MATRIX = "matrix"
         private const val FRAME_MS = 33L
         private const val PIPE_FRAME_MS = 40L
     }
@@ -86,6 +87,29 @@ class SaverView(context: Context, private val mode: String) : View(context) {
     private var pipeBitmap: Bitmap? = null
     private var pipeCanvas: Canvas? = null
 
+    // ---- Matrix state: one falling head per column drawn into a persistent bitmap that fades each frame ----
+    private var glyph = 0f
+    private var mCols = 0
+    private var mRows = 0
+    private var headY: FloatArray = FloatArray(0)
+    private var headSpeed: FloatArray = FloatArray(0)
+    private var matrixBitmap: Bitmap? = null
+    private var matrixCanvas: Canvas? = null
+    private val matrixFade = Paint().apply { color = Color.argb(30, 0, 0, 0); style = Paint.Style.FILL }
+    private val headPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFE8FFEC.toInt(); typeface = android.graphics.Typeface.DEFAULT_BOLD; textAlign = Paint.Align.CENTER }
+    private val trailPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF22E85A.toInt(); typeface = android.graphics.Typeface.DEFAULT; textAlign = Paint.Align.CENTER }
+    // half-width katakana, a handful of Chinese characters, digits and a few symbols
+    private val glyphs = buildString {
+        for (c in 0xFF66..0xFF9D) append(c.toChar())
+        append("\u65E5\u6708\u706B\u6C34\u6728\u91D1\u571F\u5C71\u5DDD\u7530\u4EBA\u53E3\u529B\u5927\u4E2D\u5C0F\u4E0A\u4E0B\u5929\u5730\u5149\u96FB\u6570\u5B57\u9F8D\u9580\u6C17\u9053")
+        append("0123456789")
+        append("<>+-*=:")
+    }
+    private val oneChar = CharArray(1)
+    private val edge = EdgeLayer(resources.displayMetrics.density, t0, java.util.Random())
+    private var lastChar: CharArray = CharArray(0)
+    private var mTrail: IntArray = IntArray(0)
+
     private val frame = object : Runnable {
         override fun run() {
             if (!running) return
@@ -105,10 +129,12 @@ class SaverView(context: Context, private val mode: String) : View(context) {
         super.onSizeChanged(w, h, oldw, oldh)
         if (w <= 0 || h <= 0) return
         sized = true
+        edge.onSize(w, h)
         when (mode) {
             MODE_MYSTIFY -> initMystify(w, h)
             MODE_STARFIELD -> initStarfield(w, h)
             MODE_PIPES -> initPipes(w, h)
+            MODE_MATRIX -> initMatrix(w, h)
         }
     }
 
@@ -153,7 +179,9 @@ class SaverView(context: Context, private val mode: String) : View(context) {
             MODE_MYSTIFY -> stepMystify()
             MODE_STARFIELD -> stepStarfield()
             MODE_PIPES -> stepPipes()
+            MODE_MATRIX -> stepMatrix()
         }
+        edge.step()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -165,8 +193,9 @@ class SaverView(context: Context, private val mode: String) : View(context) {
             MODE_MYSTIFY -> drawMystify(canvas)
             MODE_STARFIELD -> drawStarfield(canvas)
             MODE_PIPES -> drawPipes(canvas)
-            else -> canvas.drawColor(Color.BLACK)
+            MODE_MATRIX -> drawMatrix(canvas)
         }
+        edge.draw(canvas)
     }
 
     // ---------------- Mystify ----------------
@@ -355,6 +384,58 @@ class SaverView(context: Context, private val mode: String) : View(context) {
             canvas.drawColor(Color.BLACK)
             return
         }
+        canvas.drawBitmap(bmp, 0f, 0f, null)
+    }
+
+    // ---------------- Matrix ----------------
+
+    private fun initMatrix(w: Int, h: Int) {
+        glyph = 16f * density
+        mCols = (w / glyph).toInt().coerceAtLeast(1)
+        mRows = (h / glyph).toInt().coerceAtLeast(1)
+        headY = FloatArray(mCols) { -rnd.nextInt(mRows * 2).toFloat() }
+        headSpeed = FloatArray(mCols) { 0.35f + rnd.nextFloat() * 0.65f }
+        lastChar = CharArray(mCols) { glyphs[rnd.nextInt(glyphs.length)] }
+        mTrail = IntArray(mCols) { 8 + rnd.nextInt(16) }
+        headPaint.textSize = glyph
+        trailPaint.textSize = glyph
+        matrixBitmap?.recycle()
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        matrixBitmap = bmp
+        matrixCanvas = Canvas(bmp).also { it.drawColor(Color.BLACK) }
+    }
+
+    private fun stepMatrix() {
+        val c = matrixCanvas ?: return
+        c.drawRect(0f, 0f, width.toFloat(), height.toFloat(), matrixFade)
+        for (i in 0 until mCols) {
+            val prev = headY[i]
+            headY[i] += headSpeed[i]
+            val row = headY[i].toInt()
+            if (row != prev.toInt() && row >= 0 && row < mRows) {
+                val x = i * glyph + glyph / 2f
+                // the previous head cools to trail green, the new head is near white
+                if (row - 1 >= 0) {
+                    oneChar[0] = lastChar[i]
+                    c.drawRect(x - glyph / 2f, (row - 1) * glyph, x + glyph / 2f, row * glyph, blackPaint)
+                    c.drawText(oneChar, 0, 1, x, row * glyph - glyph * 0.15f, trailPaint)
+                }
+                val ch = glyphs[rnd.nextInt(glyphs.length)]
+                lastChar[i] = ch
+                oneChar[0] = ch
+                c.drawText(oneChar, 0, 1, x, (row + 1) * glyph - glyph * 0.15f, headPaint)
+            }
+            if (row > mRows + rnd.nextInt(8)) {
+                headY[i] = -rnd.nextInt(mRows).toFloat()
+                headSpeed[i] = 0.35f + rnd.nextFloat() * 0.65f
+                mTrail[i] = 8 + rnd.nextInt(16)
+            }
+        }
+    }
+
+    private fun drawMatrix(canvas: Canvas) {
+        val bmp = matrixBitmap
+        if (bmp == null) { canvas.drawColor(Color.BLACK); return }
         canvas.drawBitmap(bmp, 0f, 0f, null)
     }
 }
